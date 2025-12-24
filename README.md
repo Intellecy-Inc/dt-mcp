@@ -23,8 +23,12 @@ An MCP (Model Context Protocol) server for [DEVONthink](https://www.devontechnol
 ### Option 1: Download Pre-built Binary (Recommended)
 
 1. Download the latest release from the [Releases](../../releases) page
-2. Move `dt-mcp` to a permanent location, e.g., `/usr/local/bin/` or `~/.local/bin/`
-3. If macOS blocks the app, right-click and select "Open" to allow it
+2. Verify the download (optional):
+   ```bash
+   shasum -a 256 -c dt-mcp-vX.Y.Z-macos.zip.sha256
+   ```
+3. Unzip and move `dt-mcp` to a permanent location, e.g., `/usr/local/bin/` or `~/.local/bin/`
+4. The binary is signed and notarized by Apple, so it should run without warnings
 
 ### Option 2: Build from Source
 
@@ -92,14 +96,17 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 | `create_group` | Create a new group |
 | `update_record` | Update record properties |
 | `move_record` | Move record to another group |
-| `trash_record` | Move record to trash |
+| `delete_record` | Move record to trash |
+| `duplicate_record` | Duplicate a record |
+| `replicate_record` | Create a replicant |
 
 ### Tags & Metadata
 | Tool | Description |
 |------|-------------|
 | `get_tags` | Get all tags in a database |
-| `add_tag` | Add tag to a record |
-| `remove_tag` | Remove tag from a record |
+| `set_record_tags` | Set tags (replaces existing) |
+| `add_record_tags` | Add tags to a record |
+| `remove_record_tags` | Remove tags from a record |
 | `get_custom_metadata` | Get custom metadata |
 | `set_custom_metadata` | Set custom metadata |
 
@@ -125,12 +132,41 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 | `get_incoming_links` | Get incoming references |
 | `get_outgoing_links` | Get outgoing references |
 
+### Database Operations
+| Tool | Description |
+|------|-------------|
+| `get_database` | Get database details |
+| `open_database` | Open a database file |
+| `close_database` | Close a database |
+| `verify_database` | Verify database integrity |
+| `optimize_database` | Optimize database |
+
+### Import/Export & OCR
+| Tool | Description |
+|------|-------------|
+| `import_file` | Import a file into DEVONthink |
+| `export_record` | Export record to filesystem |
+| `ocr_file` | OCR a file and import |
+| `convert_to_searchable_pdf` | Convert to searchable PDF |
+
+### Windows & UI
+| Tool | Description |
+|------|-------------|
+| `get_windows` | List open windows |
+| `open_record` | Open record in new tab |
+| `open_window` | Open new window |
+| `get_current_record` | Get currently viewed record |
+
 ### Other
 | Tool | Description |
 |------|-------------|
 | `get_reminders` | Get record reminders |
 | `set_reminder` | Set a reminder |
+| `clear_reminder` | Remove a reminder |
 | `get_smart_groups` | List smart groups |
+| `get_smart_group_contents` | Get smart group results |
+| `get_trash` | Get trash contents |
+| `empty_trash` | Empty database trash |
 | `get_annotations` | Get record annotations |
 | `get_replicants` | Get record parent locations |
 | `get_duplicates` | Find duplicate records |
