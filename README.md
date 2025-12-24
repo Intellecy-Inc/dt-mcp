@@ -1,6 +1,96 @@
 # dt-mcp
 
-An MCP (Model Context Protocol) server for [DEVONthink](https://www.devontechnologies.com/apps/devonthink), enabling AI assistants like Claude to interact with your DEVONthink databases.
+An MCP (Model Context Protocol) server for [DEVONthink](https://www.devontechnologies.com/apps/devonthink), enabling AI assistants like Claude to interact with your DEVONthink databases. The most excellent DEVONthink application version 4 does have a 'chat' feature that permits one to interact with an LLM, so why an MCP then?  Quick overview:
+
+## dt-mcp vs DEVONthink Built-in Chat
+
+  | Aspect | dt-mcp | DEVONthink Chat |
+  |--------|--------|-----------------|
+  | Integration | External via MCP protocol | Native in DEVONthink UI |
+  | LLM Provider | Any MCP client (Claude, etc.) | OpenAI API or local LLMs |
+  | Scope | Programmatic access to all DT operations | Conversation about documents |
+  | Actions | Can create, move, tag, search, modify records | Read-only Q&A about content |
+
+### dt-mcp Pros
+- **Model flexibility** - Use Claude, GPT-4, local models, any MCP-compatible client
+- **Write operations** - Create records, set tags, move files, not just read
+- **Automation** - Chain operations, batch processing, integrate into workflows
+- **Context sharing** - AI assistant can access DT data alongside other tools/files
+- **Extensible** - Add custom tools as needed
+
+### dt-mcp Cons
+- **Setup complexity** - Requires MCP client configuration
+- **No native UI** - Operates through external chat interface
+- **Requires running server** - Additional process to manage
+
+### DEVONthink Chat Pros
+- **Zero setup** - Built into the app
+- **Tight UI integration** - Select documents, chat in sidebar
+- **Document focus** - Optimized for discussing specific documents
+
+### DEVONthink Chat Cons
+- **Read-only** - Cannot modify database through chat
+- **Limited to OpenAI/local** - No Claude or other providers
+- **Siloed** - Can't combine with other data sources in one conversation
+- **No automation** - Pure conversational, no programmatic control
+
+## Examples
+#### Using Tools
+
+  You can call tools directly by name:
+
+  > "Call list_databases"
+
+  Or simply use natural language - the AI will determine which tool to use:
+
+  > "What databases do I have?"
+
+  Both achieve the same result. The AI interprets your intent and calls the appropriate dt-mcp tool automatically.
+
+#### Simple interactions
+ **Find and summarize recent notes**
+
+  Search your database for notes on a topic and get a quick summary. Assume the database is called 'projects'
+
+  > "Search projects for notes about 'project planning' and summarize the key points."
+
+ **Create a meeting note**
+
+  Quickly capture meeting notes directly into DEVONthink with proper tagging.
+
+  > "Create a new markdown note in DEVONthink called 'Team Sync 2024-12-24' with tags 'meetings' and 'work'. Include these discussion points: budget review, Q1 goals, hiring timeline."
+
+  **Analyze selected document**
+
+  Work with whatever document you currently have selected in DEVONthink.
+
+  > "Look at my currently selected document in DEVONthink and extract all action items or tasks mentioned."
+  
+#### Cross-Tool Examples
+
+  **Import project documentation**
+
+  Scan a codebase and import relevant docs into DEVONthink.
+
+  > "Find all README and markdown files in ~/Projects/myapp and import them into my 'Development' database in DEVONthink."
+
+  **Research with web + archive**
+
+  Combine live web search with your personal knowledge base.
+
+  > "Search the web for 'Swift concurrency best practices' and also check what I have in DEVONthink on this topic. Compare the findings."
+
+  **Export for version control**
+
+  Pull content from DEVONthink into your project.
+
+  > "Get the API specification document from DEVONthink and save it as docs/api-spec.md in my current project."
+
+  **Daily digest**
+
+  Generate a summary from multiple sources.
+
+  > "List my flagged items in DEVONthink and any TODO comments in my current codebase. Create a markdown summary of what needs attention."  
 
 ## Features
 
@@ -12,6 +102,7 @@ An MCP (Model Context Protocol) server for [DEVONthink](https://www.devontechnol
 - **Metadata**: Tags, labels, ratings, custom metadata, reminders
 - **Links**: Item links, incoming/outgoing references
 
+
 ## Requirements
 
 - macOS 14.0 or later
@@ -20,15 +111,17 @@ An MCP (Model Context Protocol) server for [DEVONthink](https://www.devontechnol
 
 ## Installation
 
-### Option 1: Download Pre-built Binary (Recommended)
+### Option 1: Download Pre-built Binary
+I take it most have little appetite to compile the code, certainly if Xcode is not installed. So
+therefore this binary. It is notarized by Apple so it should run without warnings.
 
 1. Download the latest release from the [Releases](../../releases) page
-2. Verify the download (optional):
+2. If you want, verify the download:
    ```bash
    shasum -a 256 -c dt-mcp-vX.Y.Z-macos.zip.sha256
    ```
 3. Unzip and move `dt-mcp` to a permanent location, e.g., `/usr/local/bin/` or `~/.local/bin/`
-4. The binary is signed and notarized by Apple, so it should run without warnings
+
 
 ### Option 2: Build from Source
 
@@ -77,7 +170,7 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 }
 ```
 
-## Available Tools
+## Available Tools in dt-mcp
 
 ### Database & Navigation
 | Tool | Description |
