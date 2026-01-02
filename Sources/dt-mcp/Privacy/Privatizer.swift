@@ -198,6 +198,9 @@ class Privatizer {
   func privatizeRecord(_ record: [String: Any]) -> [String: Any] {
     var result = record
 
+    // Mark as write-protected so LLM knows not to attempt edits
+    result["writeProtected"] = true
+
     // Strip metadata
     result.removeValue(forKey: "path")
     result.removeValue(forKey: "creationDate")
@@ -224,6 +227,14 @@ class Privatizer {
       return isPrivate(tags)
     }
     return false
+  }
+
+  // MARK: - Write Protection
+
+  func checkWritePermission(uuid: String, tags: [String]) throws {
+    if isPrivate(tags) {
+      throw MCPError.writeProtected(uuid)
+    }
   }
 }
 

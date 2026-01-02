@@ -32,6 +32,7 @@ enum MCPError: Error, LocalizedError {
   case missingArgument(String)
   case appleScriptFailed
   case appleScriptError(String)
+  case writeProtected(String)
 
   var errorDescription: String? {
     switch self {
@@ -45,6 +46,8 @@ enum MCPError: Error, LocalizedError {
       return "Failed to create AppleScript"
     case .appleScriptError(let msg):
       return "AppleScript error: \(msg)"
+    case .writeProtected(let uuid):
+      return "Record '\(uuid)' is PRIVATE and fully write-protected. All modifications are blocked including edits, moves, tag changes, and deletions. The PRIVATE tag cannot be removed via MCP."
     }
   }
 }

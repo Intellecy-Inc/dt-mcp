@@ -164,7 +164,7 @@ extension MCPServer {
       // Record operations
       Tool(
         name: "update_record",
-        description: "Update DEVONthink (dt) record properties",
+        description: "Update DEVONthink (dt) record properties. Fails for PRIVATE-tagged documents (fully write-protected).",
         inputSchema: [
           "type": AnyCodable("object"),
           "properties": AnyCodable([
@@ -183,7 +183,7 @@ extension MCPServer {
       ),
       Tool(
         name: "delete_record",
-        description: "Delete DEVONthink (dt) record (moves to trash)",
+        description: "Delete DEVONthink (dt) record (moves to trash). Fails for PRIVATE-tagged documents.",
         inputSchema: [
           "type": AnyCodable("object"),
           "properties": AnyCodable([
@@ -194,7 +194,7 @@ extension MCPServer {
       ),
       Tool(
         name: "move_record",
-        description: "Move DEVONthink (dt) record to a different group",
+        description: "Move DEVONthink (dt) record to a different group. Fails for PRIVATE-tagged documents.",
         inputSchema: [
           "type": AnyCodable("object"),
           "properties": AnyCodable([
@@ -206,7 +206,7 @@ extension MCPServer {
       ),
       Tool(
         name: "duplicate_record",
-        description: "Duplicate a DEVONthink (dt) record",
+        description: "Duplicate a DEVONthink (dt) record. Fails for PRIVATE-tagged documents.",
         inputSchema: [
           "type": AnyCodable("object"),
           "properties": AnyCodable([
@@ -218,7 +218,7 @@ extension MCPServer {
       ),
       Tool(
         name: "replicate_record",
-        description: "Create a DEVONthink (dt) replicant of a record",
+        description: "Create a DEVONthink (dt) replicant of a record. Fails for PRIVATE-tagged documents.",
         inputSchema: [
           "type": AnyCodable("object"),
           "properties": AnyCodable([
@@ -253,7 +253,7 @@ extension MCPServer {
       ),
       Tool(
         name: "set_record_tags",
-        description: "Set tags on DEVONthink (dt) record (replaces existing)",
+        description: "Set tags on DEVONthink (dt) record (replaces existing). Fails for PRIVATE-tagged documents.",
         inputSchema: [
           "type": AnyCodable("object"),
           "properties": AnyCodable([
@@ -265,7 +265,7 @@ extension MCPServer {
       ),
       Tool(
         name: "add_record_tags",
-        description: "Add tags to DEVONthink (dt) record",
+        description: "Add tags to DEVONthink (dt) record. Fails for PRIVATE-tagged documents.",
         inputSchema: [
           "type": AnyCodable("object"),
           "properties": AnyCodable([
@@ -277,7 +277,7 @@ extension MCPServer {
       ),
       Tool(
         name: "remove_record_tags",
-        description: "Remove tags from DEVONthink (dt) record",
+        description: "Remove tags from DEVONthink (dt) record. Fails for PRIVATE-tagged documents (tag cannot be removed via MCP).",
         inputSchema: [
           "type": AnyCodable("object"),
           "properties": AnyCodable([
@@ -506,7 +506,7 @@ extension MCPServer {
       ),
       Tool(
         name: "set_reminder",
-        description: "Set a reminder on DEVONthink (dt) record",
+        description: "Set a reminder on DEVONthink (dt) record. Fails for PRIVATE-tagged documents.",
         inputSchema: [
           "type": AnyCodable("object"),
           "properties": AnyCodable([
@@ -519,7 +519,7 @@ extension MCPServer {
       ),
       Tool(
         name: "clear_reminder",
-        description: "Remove reminder from DEVONthink (dt) record",
+        description: "Remove reminder from DEVONthink (dt) record. Fails for PRIVATE-tagged documents.",
         inputSchema: [
           "type": AnyCodable("object"),
           "properties": AnyCodable([
@@ -565,7 +565,7 @@ extension MCPServer {
       ),
       Tool(
         name: "set_custom_metadata",
-        description: "Set custom metadata on DEVONthink (dt) record",
+        description: "Set custom metadata on DEVONthink (dt) record. Fails for PRIVATE-tagged documents.",
         inputSchema: [
           "type": AnyCodable("object"),
           "properties": AnyCodable([
@@ -799,6 +799,8 @@ extension MCPServer {
       guard let uuid = arguments["uuid"] as? String else {
         throw MCPError.missingArgument("uuid")
       }
+      let tags = try devonthink.getRecordTags(uuid: uuid)
+      try Privatizer.shared.checkWritePermission(uuid: uuid, tags: tags)
       var props: [String: Any] = [:]
       if let name = arguments["name"] { props["name"] = name }
       if let comment = arguments["comment"] { props["comment"] = comment }
@@ -815,6 +817,8 @@ extension MCPServer {
       guard let uuid = arguments["uuid"] as? String else {
         throw MCPError.missingArgument("uuid")
       }
+      let tags = try devonthink.getRecordTags(uuid: uuid)
+      try Privatizer.shared.checkWritePermission(uuid: uuid, tags: tags)
       let success = try devonthink.deleteRecord(uuid: uuid)
       return formatToolResult(["success": success])
 
@@ -823,6 +827,8 @@ extension MCPServer {
             let to = arguments["to"] as? String else {
         throw MCPError.missingArgument("uuid or to")
       }
+      let tags = try devonthink.getRecordTags(uuid: uuid)
+      try Privatizer.shared.checkWritePermission(uuid: uuid, tags: tags)
       let record = try devonthink.moveRecord(uuid: uuid, to: to)
       return formatToolResult(record)
 
@@ -830,6 +836,8 @@ extension MCPServer {
       guard let uuid = arguments["uuid"] as? String else {
         throw MCPError.missingArgument("uuid")
       }
+      let tags = try devonthink.getRecordTags(uuid: uuid)
+      try Privatizer.shared.checkWritePermission(uuid: uuid, tags: tags)
       let to = arguments["to"] as? String
       let record = try devonthink.duplicateRecord(uuid: uuid, to: to)
       return formatToolResult(record)
@@ -839,6 +847,8 @@ extension MCPServer {
             let to = arguments["to"] as? String else {
         throw MCPError.missingArgument("uuid or to")
       }
+      let tags = try devonthink.getRecordTags(uuid: uuid)
+      try Privatizer.shared.checkWritePermission(uuid: uuid, tags: tags)
       let record = try devonthink.replicateRecord(uuid: uuid, to: to)
       return formatToolResult(record)
 
@@ -859,26 +869,32 @@ extension MCPServer {
 
     case "set_record_tags":
       guard let uuid = arguments["uuid"] as? String,
-            let tags = arguments["tags"] as? [String] else {
+            let newTags = arguments["tags"] as? [String] else {
         throw MCPError.missingArgument("uuid or tags")
       }
-      let success = try devonthink.setRecordTags(uuid: uuid, tags: tags)
+      let currentTags = try devonthink.getRecordTags(uuid: uuid)
+      try Privatizer.shared.checkWritePermission(uuid: uuid, tags: currentTags)
+      let success = try devonthink.setRecordTags(uuid: uuid, tags: newTags)
       return formatToolResult(["success": success])
 
     case "add_record_tags":
       guard let uuid = arguments["uuid"] as? String,
-            let tags = arguments["tags"] as? [String] else {
+            let newTags = arguments["tags"] as? [String] else {
         throw MCPError.missingArgument("uuid or tags")
       }
-      let success = try devonthink.addRecordTags(uuid: uuid, tags: tags)
+      let currentTags = try devonthink.getRecordTags(uuid: uuid)
+      try Privatizer.shared.checkWritePermission(uuid: uuid, tags: currentTags)
+      let success = try devonthink.addRecordTags(uuid: uuid, tags: newTags)
       return formatToolResult(["success": success])
 
     case "remove_record_tags":
       guard let uuid = arguments["uuid"] as? String,
-            let tags = arguments["tags"] as? [String] else {
+            let tagsToRemove = arguments["tags"] as? [String] else {
         throw MCPError.missingArgument("uuid or tags")
       }
-      let success = try devonthink.removeRecordTags(uuid: uuid, tags: tags)
+      let currentTags = try devonthink.getRecordTags(uuid: uuid)
+      try Privatizer.shared.checkWritePermission(uuid: uuid, tags: currentTags)
+      let success = try devonthink.removeRecordTags(uuid: uuid, tags: tagsToRemove)
       return formatToolResult(["success": success])
 
     // Import/Export
@@ -1026,6 +1042,8 @@ extension MCPServer {
             let date = arguments["date"] as? String else {
         throw MCPError.missingArgument("uuid or date")
       }
+      let tags = try devonthink.getRecordTags(uuid: uuid)
+      try Privatizer.shared.checkWritePermission(uuid: uuid, tags: tags)
       let alarm = arguments["alarm"] as? Bool ?? false
       let success = try devonthink.setReminder(uuid: uuid, date: date, alarm: alarm)
       return formatToolResult(["success": success])
@@ -1034,6 +1052,8 @@ extension MCPServer {
       guard let uuid = arguments["uuid"] as? String else {
         throw MCPError.missingArgument("uuid")
       }
+      let tags = try devonthink.getRecordTags(uuid: uuid)
+      try Privatizer.shared.checkWritePermission(uuid: uuid, tags: tags)
       let success = try devonthink.clearReminder(uuid: uuid)
       return formatToolResult(["success": success])
 
@@ -1066,6 +1086,8 @@ extension MCPServer {
             let value = arguments["value"] as? String else {
         throw MCPError.missingArgument("uuid, key, or value")
       }
+      let tags = try devonthink.getRecordTags(uuid: uuid)
+      try Privatizer.shared.checkWritePermission(uuid: uuid, tags: tags)
       let success = try devonthink.setCustomMetadata(uuid: uuid, key: key, value: value)
       return formatToolResult(["success": success])
 
