@@ -10,7 +10,7 @@
 
 I take it most have little appetite to compile the code, certainly if Xcode is not installed. So therefore this binary. It is notarized by Apple so it should run without warnings.
 
-1. Download the latest release from the [Releases](../../releases) page
+1. Download the latest release from the [Releases](https://github.com/Intellecy-Inc/dt-mcp/releases) page
 2. If you want, verify the download:
    ```bash
    shasum -a 256 -c dt-mcp-vX.Y.Z-macos.zip.sha256
