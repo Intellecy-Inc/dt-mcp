@@ -34,6 +34,15 @@ Tag any document with `PRIVATE` (case-insensitive) in DEVONthink, and when acces
 - DEVONthink searches (run locally with real values)
 - Token-to-original mappings
 
+## Configuration Files
+
+Located in `~/.config/dt-mcp/`:
+
+| File | Purpose |
+|------|---------|
+| `config.json` | Encryption key (auto-generated on first run), phone patterns |
+| `token_cache.json` | Maps tokens back to original values for later retrieval |
+
 ## What Goes to LLM
 
 - Tokenized content (meaningless without local key)
