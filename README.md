@@ -2,6 +2,8 @@
 
 An MCP (Model Context Protocol) server for [DEVONthink](https://www.devontechnologies.com/apps/devonthink), enabling AI assistants like Claude to interact with your DEVONthink databases.
 
+V0.4.0
+
 ## Features
 
 - **Database Operations**: List databases, search records, navigate groups
@@ -70,7 +72,7 @@ An MCP (Model Context Protocol) server for [DEVONthink](https://www.devontechnol
 
 ## License
 
-Copyright 2025 Intellecy Inc.
+Copyright 2025-2026 Intellecy Inc.
 
 Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
 
