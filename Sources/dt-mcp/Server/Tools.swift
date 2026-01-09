@@ -77,6 +77,9 @@ extension MCPServer {
     if let result = try handlePrivacyTool(name: name, arguments: arguments) {
       return result
     }
+    if let result = try handleImageTool(name: name, arguments: arguments) {
+      return result
+    }
 
     throw MCPError.unknownTool(name)
   }

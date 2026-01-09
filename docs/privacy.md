@@ -164,3 +164,70 @@ Excluded databases are stored in `~/.config/dt-mcp/config.json` under `excluded_
 ### Use Case
 
 "Some databases the AI should never see at all" - financial records, medical data, legal documents, etc.
+
+## Image Handling
+
+Control what image data leaves your machine. Images require explicit confirmation before being sent.
+
+### Two-Step Confirmation
+
+The `preview_images` tool uses a two-step flow:
+
+1. **First call** - Returns metadata (dimensions, size) and any EXIF data found (author, GPS, camera, etc.)
+2. **Second call with `confirmed: true`** - Returns actual image data for AI analysis
+
+The AI must ask: "Do you want me to analyze this image? (A scaled version will be sent to Anthropic)"
+
+This ensures you know what private EXIF data exists and can decide whether to send the image.
+
+### Image Processing
+
+When images are retrieved:
+
+- **Scaled** - Maximum dimension 512px (configurable)
+- **EXIF stripped** - No GPS, camera info, author, or other metadata
+- **Adaptive compression** - JPEG quality adjusted (0.8 → 0.25) to fit under 50KB for Claude Code
+
+### Configuration
+
+In `~/.config/dt-mcp/config.json`:
+
+```json
+{
+  "image_handling": {
+    "private_images": "thumbnail",
+    "max_dimension": 512
+  }
+}
+```
+
+### Private Image Modes
+
+For PRIVATE-tagged images, the `private_images` setting controls behavior:
+
+| Mode | Behavior |
+|------|----------|
+| `thumbnail` (default) | Returns scaled/stripped image when confirmed |
+| `text_only` | Only metadata, never actual image data |
+| `blocked` | No access at all (error on attempt) |
+
+### Tool
+
+| Tool | Description |
+|------|-------------|
+| `preview_images` | Preview image with confirmation flow |
+
+### What Gets Sent
+
+| Data Type | Sent to LLM |
+|-----------|-------------|
+| Filename | Yes |
+| Dimensions | Yes |
+| File size | Yes |
+| EXIF data | No (stripped) |
+| Full resolution | No (scaled) |
+| GPS coordinates | No (stripped) |
+
+### Use Case
+
+"AI can't see my photos without asking first" - the confirmation flow ensures you're aware when images are being sent.

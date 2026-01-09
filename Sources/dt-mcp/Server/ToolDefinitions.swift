@@ -33,6 +33,7 @@ extension MCPServer {
       + recordToolDefinitions()
       + contentToolDefinitions()
       + privacyToolDefinitions()
+      + imageToolDefinitions()
   }
 
   // MARK: - Database Tools
@@ -757,6 +758,25 @@ extension MCPServer {
           "type": AnyCodable("object"),
           "properties": AnyCodable([:] as [String: Any]),
           "required": AnyCodable([] as [String])
+        ]
+      )
+    ]
+  }
+
+  // MARK: - Image Tools
+
+  func imageToolDefinitions() -> [Tool] {
+    return [
+      Tool(
+        name: "preview_images",
+        description: "Preview an image record from DEVONthink. First call returns metadata only (dimensions, size, EXIF data found). IMPORTANT: DO NOT set confirmed=true without explicit user approval. You MUST show the user the metadata and EXIF info first, then ask 'Do you want me to analyze this image? (A scaled version will be sent to Anthropic)'. Only after user confirms, call again with confirmed: true to get actual image data (scaled to max 512px, EXIF-stripped). For PRIVATE-tagged images, behavior depends on config. NEVER output the base64 data to the user - just describe what you see in the image.",
+        inputSchema: [
+          "type": AnyCodable("object"),
+          "properties": AnyCodable([
+            "uuid": ["type": "string", "description": "Record UUID of the image"] as [String: Any],
+            "confirmed": ["type": "boolean", "description": "Set to true to retrieve actual image data. Without this, only metadata is returned.", "default": false] as [String: Any]
+          ] as [String: Any]),
+          "required": AnyCodable(["uuid"])
         ]
       )
     ]

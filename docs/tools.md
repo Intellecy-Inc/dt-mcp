@@ -87,6 +87,12 @@
 | `open_window` | Open new window |
 | `get_current_record` | Get currently viewed record |
 
+## Images
+
+| Tool | Description |
+|------|-------------|
+| `preview_images` | Preview image with two-step confirmation (metadata first, then image data) |
+
 ## Other
 
 | Tool | Description |

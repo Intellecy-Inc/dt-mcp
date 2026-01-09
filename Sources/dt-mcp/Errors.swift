@@ -34,6 +34,9 @@ enum MCPError: Error, LocalizedError {
   case appleScriptError(String)
   case writeProtected(String)
   case databaseExcluded(String)
+  case imageBlocked(String)
+  case notAnImage(String)
+  case imageProcessingFailed(String)
 
   var errorDescription: String? {
     switch self {
@@ -51,6 +54,12 @@ enum MCPError: Error, LocalizedError {
       return "Record '\(uuid)' is PRIVATE and fully write-protected. All modifications are blocked including edits, moves, tag changes, and deletions. The PRIVATE tag cannot be removed via MCP."
     case .databaseExcluded(let uuid):
       return "Database '\(uuid)' is excluded and not accessible via MCP."
+    case .imageBlocked(let uuid):
+      return "Image '\(uuid)' is private and image access is blocked by configuration."
+    case .notAnImage(let uuid):
+      return "Record '\(uuid)' is not an image."
+    case .imageProcessingFailed(let reason):
+      return "Failed to process image: \(reason)"
     }
   }
 }

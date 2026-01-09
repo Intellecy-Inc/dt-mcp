@@ -2,7 +2,7 @@
 
 An MCP (Model Context Protocol) server for [DEVONthink](https://www.devontechnologies.com/apps/devonthink), enabling AI assistants like Claude to interact with your DEVONthink databases.
 
-V0.5.1
+V0.6.1
 
 ## Features
 
@@ -14,6 +14,7 @@ V0.5.1
 - **Metadata**: Tags, labels, ratings, custom metadata, reminders
 - **Links**: Item links, incoming/outgoing references
 - **Privacy**: Tag documents as `PRIVATE` to anonymize PII before sending to LLM
+- **Image Preview**: View images with confirmation flow, EXIF stripped, scaled for efficiency
 
 ## Quick Start
 

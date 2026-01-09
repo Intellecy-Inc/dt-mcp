@@ -24,6 +24,23 @@
 
 import Foundation
 
+// MARK: - Image Handling Configuration
+
+struct ImageHandlingConfig: Codable, Equatable {
+  var privateImages: String  // "thumbnail", "text_only", "blocked"
+  var maxDimension: Int
+
+  enum CodingKeys: String, CodingKey {
+    case privateImages = "private_images"
+    case maxDimension = "max_dimension"
+  }
+
+  init(privateImages: String = "thumbnail", maxDimension: Int = 512) {
+    self.privateImages = privateImages
+    self.maxDimension = maxDimension
+  }
+}
+
 // MARK: - Configuration
 
 struct MCPConfig: Codable {
@@ -32,6 +49,7 @@ struct MCPConfig: Codable {
   var phonePatterns: [String]
   var encodePhones: [String]
   var excludedDatabases: [String]
+  var imageHandling: ImageHandlingConfig
 
   enum CodingKeys: String, CodingKey {
     case privacyMode = "privacy_mode"
@@ -39,6 +57,7 @@ struct MCPConfig: Codable {
     case phonePatterns = "phone_patterns"
     case encodePhones = "encode_phones"
     case excludedDatabases = "excluded_databases"
+    case imageHandling = "image_handling"
   }
 
   static let defaultPhonePatterns = [
@@ -53,13 +72,15 @@ struct MCPConfig: Codable {
     encryptionKey: String = "",
     phonePatterns: [String] = defaultPhonePatterns,
     encodePhones: [String] = [],
-    excludedDatabases: [String] = []
+    excludedDatabases: [String] = [],
+    imageHandling: ImageHandlingConfig = ImageHandlingConfig()
   ) {
     self.privacyMode = privacyMode
     self.encryptionKey = encryptionKey
     self.phonePatterns = phonePatterns
     self.encodePhones = encodePhones
     self.excludedDatabases = excludedDatabases
+    self.imageHandling = imageHandling
   }
 }
 
@@ -160,5 +181,11 @@ class ConfigManager {
   func includeDatabase(_ uuid: String) {
     config.excludedDatabases.removeAll { $0 == uuid }
     save()
+  }
+
+  // MARK: - Image Handling
+
+  var imageHandling: ImageHandlingConfig {
+    config.imageHandling
   }
 }
