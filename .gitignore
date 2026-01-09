@@ -36,8 +36,9 @@ DerivedData/
 *.dylib
 *.a
 
-# Claude Code settings
-.claude/
+# Claude Code settings (contain local paths)
+.claude/settings.json
+.claude/settings.local.json
 
 # Distribution binaries
 dist/
