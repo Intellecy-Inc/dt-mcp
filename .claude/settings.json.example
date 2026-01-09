@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "dt-mcp": {
+      "command": "/path/to/dt-mcp/.build/debug/dt-mcp"
+    }
+  }
+}
