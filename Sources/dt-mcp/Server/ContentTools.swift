@@ -31,8 +31,8 @@ extension MCPServer {
   static let contentTools = [
     "import_file", "export_record", "classify", "see_also", "summarize", "get_concordance",
     "ocr_file", "convert_to_searchable_pdf", "create_bookmark", "download_url", "download_markdown",
-    "get_incoming_links", "get_outgoing_links", "get_item_url", "get_windows", "open_record",
-    "open_window", "get_reminders", "set_reminder", "clear_reminder", "get_smart_groups",
+    "download_pdf_from_doi", "get_incoming_links", "get_outgoing_links", "get_item_url", "get_windows",
+    "open_record", "open_window", "get_reminders", "set_reminder", "clear_reminder", "get_smart_groups",
     "get_smart_group_contents"
   ]
 
@@ -170,6 +170,19 @@ extension MCPServer {
       }
       let destination = arguments["destination"] as? String
       let record = try devonthink.downloadMarkdown(url: url, databaseUUID: database, destinationUUID: destination)
+      return formatToolResult(record)
+
+    case "download_pdf_from_doi":
+      guard let doi = arguments["doi"] as? String,
+            let database = arguments["database"] as? String else {
+        throw MCPError.missingArgument("doi or database")
+      }
+      if ConfigManager.shared.isExcluded(database) {
+        throw MCPError.databaseExcluded(database)
+      }
+      let destination = arguments["destination"] as? String
+      let name = arguments["name"] as? String
+      let record = try devonthink.downloadPDFFromDOI(doi: doi, databaseUUID: database, destinationUUID: destination, name: name)
       return formatToolResult(record)
 
     // Links
