@@ -570,6 +570,20 @@ extension MCPServer {
         ]
       ),
       Tool(
+        name: "download_pdf_from_doi",
+        description: "Download a PDF from sci-hub using a DOI and import into DEVONthink (dt). Use this when a paper is behind a paywall.",
+        inputSchema: [
+          "type": AnyCodable("object"),
+          "properties": AnyCodable([
+            "doi": ["type": "string", "description": "DOI of the paper (e.g., '10.1234/example')"] as [String: Any],
+            "database": ["type": "string", "description": "Database UUID"] as [String: Any],
+            "destination": ["type": "string", "description": "Destination group UUID (optional)"] as [String: Any],
+            "name": ["type": "string", "description": "Override filename (optional)"] as [String: Any]
+          ] as [String: Any]),
+          "required": AnyCodable(["doi", "database"])
+        ]
+      ),
+      Tool(
         name: "get_incoming_links",
         description: "Get DEVONthink (dt) records that link to this record",
         inputSchema: [
