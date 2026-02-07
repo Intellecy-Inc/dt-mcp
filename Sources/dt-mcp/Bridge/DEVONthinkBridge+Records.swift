@@ -46,7 +46,7 @@ extension DEVONthinkBridge {
     tell application id "DNtp"
       set theRecord to get record with uuid "\(escape(uuid))"
       if theRecord is missing value then error "Record not found"
-      return {uuid of theRecord, name of theRecord, path of theRecord, location of theRecord, tags of theRecord, rating of theRecord, label of theRecord, flagged of theRecord, unread of theRecord, word count of theRecord, character count of theRecord, page count of theRecord, creation date of theRecord as string, modification date of theRecord as string, plain text of theRecord, comment of theRecord, URL of theRecord}
+      return {uuid of theRecord, name of theRecord, path of theRecord, location of theRecord, tags of theRecord, rating of theRecord, label of theRecord, flagged of theRecord, unread of theRecord, word count of theRecord, character count of theRecord, page count of theRecord, creation date of theRecord as string, modification date of theRecord as string, comment of theRecord, URL of theRecord}
     end tell
     """
 

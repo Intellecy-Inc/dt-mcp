@@ -99,7 +99,7 @@ class MCPServer {
         resources: ResourcesCapability(subscribe: false, listChanged: false),
         prompts: PromptsCapability(listChanged: false)
       ),
-      serverInfo: ServerInfo(name: "dt-mcp", version: "0.6.1")
+      serverInfo: ServerInfo(name: "dt-mcp", version: "0.6.2")
     )
     return JSONRPCResponse(id: id, result: AnyCodable(encodeToDict(result)), error: nil)
   }

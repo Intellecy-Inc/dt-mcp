@@ -112,9 +112,8 @@ class DEVONthinkBridge {
       "pageCount": descriptor.atIndex(12)?.int32Value ?? 0,
       "creationDate": descriptor.atIndex(13)?.stringValue ?? "",
       "modificationDate": descriptor.atIndex(14)?.stringValue ?? "",
-      "plainText": descriptor.atIndex(15)?.stringValue ?? "",
-      "comment": descriptor.atIndex(16)?.stringValue ?? "",
-      "url": descriptor.atIndex(17)?.stringValue ?? ""
+      "comment": descriptor.atIndex(15)?.stringValue ?? "",
+      "url": descriptor.atIndex(16)?.stringValue ?? ""
     ]
   }
 
