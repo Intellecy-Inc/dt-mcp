@@ -2,7 +2,7 @@
 
 An MCP (Model Context Protocol) server for [DEVONthink](https://www.devontechnologies.com/apps/devonthink), enabling AI assistants like Claude to interact with your DEVONthink databases.
 
-V0.6.1
+V0.6.2
 
 ## Features
 
@@ -44,9 +44,9 @@ V0.6.1
 | Aspect | dt-mcp | DEVONthink Chat |
 |--------|--------|-----------------|
 | Integration | External via MCP protocol | Native in DEVONthink UI |
-| LLM Provider | Any MCP client (Claude, etc.) | OpenAI API or local LLMs |
+| LLM Provider | Any MCP client (Claude, etc.) | OpenAI, Claude, Gemini, Mistral, Perplexity, local |
 | Scope | Programmatic access to all DT operations | Conversation about documents |
-| Actions | Can create, move, tag, search, modify records | Read-only Q&A about content |
+| Actions | Full programmatic control over all DT operations | Chat-driven actions on selected documents |
 
 ### dt-mcp Pros
 - **Model flexibility** - Use Claude, GPT-4, local models, any MCP-compatible client
@@ -66,10 +66,8 @@ V0.6.1
 - **Document focus** - Optimized for discussing specific documents
 
 ### DEVONthink Chat Cons
-- **Read-only** - Cannot modify database through chat
-- **Limited to OpenAI/local** - No Claude or other providers
-- **Siloed** - Can't combine with other data sources in one conversation
-- **No automation** - Pure conversational, no programmatic control
+- **Document-focused** - Designed for working with selected documents, not broad database operations
+- **Siloed** - Can't combine with other data sources or tools in one conversation
 
 ## License
 
