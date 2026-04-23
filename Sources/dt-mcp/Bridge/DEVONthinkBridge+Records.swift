@@ -358,4 +358,44 @@ extension DEVONthinkBridge {
     let result = try runAppleScript(script)
     return parseRecordList(result, keys: ["uuid", "name", "path"])
   }
+
+  // MARK: - Smart Rules
+
+  // DEVONthink 4.x's scripting dictionary has no `smart rule` class, so rules
+  // cannot be created via AppleScript. `perform smart rule` (sdef ~L3174) is
+  // the only smart-rule command — it triggers existing rules by name.
+  func performSmartRule(name: String?, recordUUID: String?, trigger: String?) throws -> Bool {
+    // The trigger argument is interpolated UNQUOTED because it is an enum
+    // identifier, not a string literal. The escape() injection boundary does
+    // not apply here; validation against the known enum values is the
+    // injection boundary instead. See `rule event` enum in DEVONthink.sdef.
+    let allowedTriggers: Set<String> = [
+      "no event", "open event", "open externally event", "edit externally event",
+      "launch event", "creation event", "import event", "clipping event",
+      "download event", "rename event", "move event", "classify event",
+      "replicate event", "duplicate event", "tagging event", "flagging event",
+      "labelling event", "rating event", "move into database event",
+      "move to external folder event", "commenting event", "convert event",
+      "OCR event", "imprint event", "trashing event"
+    ]
+    if let trigger = trigger, !allowedTriggers.contains(trigger) {
+      throw MCPError.missingArgument("trigger must be a valid rule event (e.g. \"import event\")")
+    }
+
+    var parts: [String] = ["perform smart rule"]
+    if let name = name { parts.append("name \"\(escape(name))\"") }
+    if let recordUUID = recordUUID {
+      parts.append("record (get record with uuid \"\(escape(recordUUID))\")")
+    }
+    if let trigger = trigger { parts.append("trigger \(trigger)") }
+
+    let script = """
+    tell application id "DNtp"
+      set theResult to \(parts.joined(separator: " "))
+      return theResult
+    end tell
+    """
+    let result = try runAppleScript(script)
+    return result.booleanValue
+  }
 }

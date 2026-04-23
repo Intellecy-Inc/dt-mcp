@@ -102,6 +102,7 @@
 | `clear_reminder` | Remove a reminder |
 | `get_smart_groups` | List smart groups |
 | `get_smart_group_contents` | Get smart group results |
+| `perform_smart_rule` | Trigger a configured DEVONthink smart rule (cannot create rules) |
 | `get_trash` | Get trash contents |
 | `empty_trash` | Empty database trash |
 | `get_annotations` | Get record annotations |

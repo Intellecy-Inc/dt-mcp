@@ -703,6 +703,19 @@ extension MCPServer {
           ] as [String: Any]),
           "required": AnyCodable(["uuid"])
         ]
+      ),
+      Tool(
+        name: "perform_smart_rule",
+        description: "Trigger a configured DEVONthink (dt) smart rule. Rules are user-authored in DEVONthink's UI and cannot be created via this API.",
+        inputSchema: [
+          "type": AnyCodable("object"),
+          "properties": AnyCodable([
+            "name": ["type": "string", "description": "Smart rule name. If omitted, all rules are performed."] as [String: Any],
+            "record": ["type": "string", "description": "Record UUID. If omitted, the rule runs against all records matching its own conditions."] as [String: Any],
+            "trigger": ["type": "string", "description": "Optional rule event. One of: no event, open event, open externally event, edit externally event, launch event, creation event, import event, clipping event, download event, rename event, move event, classify event, replicate event, duplicate event, tagging event, flagging event, labelling event, rating event, move into database event, move to external folder event, commenting event, convert event, OCR event, imprint event, trashing event."] as [String: Any]
+          ] as [String: Any]),
+          "required": AnyCodable([] as [String])
+        ]
       )
     ]
   }
