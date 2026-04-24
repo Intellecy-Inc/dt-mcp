@@ -33,7 +33,7 @@ extension MCPServer {
     "ocr_file", "convert_to_searchable_pdf", "create_bookmark", "download_url", "download_markdown",
     "download_pdf_from_doi", "get_incoming_links", "get_outgoing_links", "get_item_url", "get_windows",
     "open_record", "open_window", "get_reminders", "set_reminder", "clear_reminder", "get_smart_groups",
-    "get_smart_group_contents"
+    "get_smart_group_contents", "perform_smart_rule"
   ]
 
   func handleContentTool(name: String, arguments: [String: Any]) throws -> [String: Any]? {
@@ -304,6 +304,22 @@ extension MCPServer {
       }
       let contents = try devonthink.getSmartGroupContents(uuid: uuid)
       return formatToolResult(contents)
+
+    // Smart Rules
+    case "perform_smart_rule":
+      let ruleName = arguments["name"] as? String
+      let recordUUID = arguments["record"] as? String
+      let trigger = arguments["trigger"] as? String
+      if let recordUUID = recordUUID {
+        let dbUUID = try devonthink.getRecordDatabaseUUID(uuid: recordUUID)
+        if ConfigManager.shared.isExcluded(dbUUID) {
+          throw MCPError.databaseExcluded(dbUUID)
+        }
+        let tags = try devonthink.getRecordTags(uuid: recordUUID)
+        try Privatizer.shared.checkWritePermission(uuid: recordUUID, tags: tags)
+      }
+      let success = try devonthink.performSmartRule(name: ruleName, recordUUID: recordUUID, trigger: trigger)
+      return formatToolResult(["success": success])
 
     default:
       return nil

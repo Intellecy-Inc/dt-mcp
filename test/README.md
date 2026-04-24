@@ -65,6 +65,7 @@ chmod +x *.sh
 | 21_replicants_duplicates.sh | get_replicants, get_duplicates |
 | 22_ocr.sh | ocr_file, convert_to_searchable_pdf |
 | 23_open_close_database.sh | open_database, close_database |
+| 26_perform_smart_rule.sh | perform_smart_rule |
 
 ## Not Tested (Destructive)
 
