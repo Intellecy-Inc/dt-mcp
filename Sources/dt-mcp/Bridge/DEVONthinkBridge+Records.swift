@@ -184,6 +184,7 @@ extension DEVONthinkBridge {
       set destGroup to get record with uuid "\(escape(destinationUUID))"
       if destGroup is missing value then error "Destination not found"
       set movedRecord to move record theRecord to destGroup
+      if movedRecord is missing value then error "Move failed: record is already at destination, or the operation is not permitted"
       return {uuid of movedRecord, name of movedRecord, path of movedRecord}
     end tell
     """
@@ -209,6 +210,7 @@ extension DEVONthinkBridge {
       set theRecord to get record with uuid "\(escape(uuid))"
       if theRecord is missing value then error "Record not found"
       \(destClause)
+      if dupRecord is missing value then error "Duplicate failed: the operation is not permitted for this record"
       return {uuid of dupRecord, name of dupRecord, path of dupRecord}
     end tell
     """
@@ -224,6 +226,7 @@ extension DEVONthinkBridge {
       set destGroup to get record with uuid "\(escape(destinationUUID))"
       if destGroup is missing value then error "Destination not found"
       set repRecord to replicate record theRecord to destGroup
+      if repRecord is missing value then error "Replicate failed: record is already replicated at destination, or the operation is not permitted"
       return {uuid of repRecord, name of repRecord, path of repRecord}
     end tell
     """
