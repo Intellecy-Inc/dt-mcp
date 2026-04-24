@@ -38,6 +38,11 @@ let package = Package(
     .executableTarget(
       name: "dt-mcp",
       path: "Sources/dt-mcp"
+    ),
+    .testTarget(
+      name: "dt-mcpTests",
+      dependencies: ["dt-mcp"],
+      path: "Tests/dt-mcpTests"
     )
   ]
 )

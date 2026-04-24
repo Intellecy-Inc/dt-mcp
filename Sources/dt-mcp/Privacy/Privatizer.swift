@@ -43,9 +43,11 @@ class Privatizer {
   private let sensitiveNumberRegex: NSRegularExpression  // Generic account/ID numbers
   private var phoneRegexes: [NSRegularExpression]
 
-  private init() {
-    let config = ConfigManager.shared
-    tokenCache = TokenCache.shared
+  // Designated init is `internal` so tests can pass in dedicated config/cache
+  // instances backed by a temp dir. Production code uses `.shared`, which uses
+  // the singleton ConfigManager/TokenCache and persists under ~/.config/dt-mcp.
+  init(config: ConfigManager = .shared, cache: TokenCache = .shared) {
+    tokenCache = cache
     phonePatterns = config.phonePatterns
     encodePhones = config.encodePhones
 
@@ -283,10 +285,10 @@ class TokenCache {
   private var cache: [String: String] = [:]
   private let cacheFile: URL
 
-  private init() {
-    let home = FileManager.default.homeDirectoryForCurrentUser
-    let configDir = home.appendingPathComponent(".config/dt-mcp")
-    cacheFile = configDir.appendingPathComponent("token_cache.json")
+  init(configDir: URL? = nil) {
+    let baseDir = configDir
+      ?? FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".config/dt-mcp")
+    cacheFile = baseDir.appendingPathComponent("token_cache.json")
     load()
   }
 
