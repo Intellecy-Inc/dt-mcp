@@ -24,6 +24,15 @@
 
 import Foundation
 
+// Reference-typed box used to receive results out of URLSession's @Sendable
+// completion handlers. Safe here because DispatchSemaphore serialises the
+// handler and the subsequent read: the handler writes before signal(), the
+// caller reads after wait() returns.
+private final class MutableBox<T>: @unchecked Sendable {
+  var value: T
+  init(_ value: T) { self.value = value }
+}
+
 // MARK: - Web & Link Operations
 
 extension DEVONthinkBridge {
@@ -44,7 +53,6 @@ extension DEVONthinkBridge {
     let sanitizedDOI = doi.replacingOccurrences(of: "/", with: "_")
     let tempPath = tempDir.appendingPathComponent("\(sanitizedDOI).pdf")
 
-    let semaphore = DispatchSemaphore(value: 0)
     var html: String?
     var workingMirror: String?
     var lastError: String?
@@ -54,26 +62,30 @@ extension DEVONthinkBridge {
       let scihubURL = "https://\(mirror)/\(doi)"
       guard let pageURL = URL(string: scihubURL) else { continue }
 
-      var pageContent: String?
-      var fetchError: Error?
+      let semaphore = DispatchSemaphore(value: 0)
+      let pageContent = MutableBox<String?>(nil)
+      let fetchError = MutableBox<Error?>(nil)
 
       let pageTask = URLSession.shared.dataTask(with: pageURL) { data, response, error in
         if let error = error {
-          fetchError = error
+          fetchError.value = error
         } else if let data = data {
-          pageContent = String(data: data, encoding: .utf8)
+          pageContent.value = String(data: data, encoding: .utf8)
         }
         semaphore.signal()
       }
       pageTask.resume()
-      _ = semaphore.wait(timeout: .now() + 10)
-
-      if fetchError == nil, let content = pageContent, !content.isEmpty {
-        html = content
-        workingMirror = mirror
-        break
+      if semaphore.wait(timeout: .now() + 10) == .success {
+        if fetchError.value == nil, let content = pageContent.value, !content.isEmpty {
+          html = content
+          workingMirror = mirror
+          break
+        } else {
+          lastError = fetchError.value?.localizedDescription ?? "No content"
+        }
       } else {
-        lastError = fetchError?.localizedDescription ?? "No content"
+        pageTask.cancel()
+        lastError = "Request timed out"
       }
     }
 
@@ -151,25 +163,29 @@ extension DEVONthinkBridge {
       throw MCPError.appleScriptError("Invalid PDF URL: \(pdfURL)")
     }
 
-    var downloadError: Error?
-    var pdfData: Data?
+    let downloadSemaphore = DispatchSemaphore(value: 0)
+    let downloadError = MutableBox<Error?>(nil)
+    let pdfData = MutableBox<Data?>(nil)
 
     let downloadTask = URLSession.shared.dataTask(with: downloadURL) { data, response, error in
       if let error = error {
-        downloadError = error
+        downloadError.value = error
       } else {
-        pdfData = data
+        pdfData.value = data
       }
-      semaphore.signal()
+      downloadSemaphore.signal()
     }
     downloadTask.resume()
-    _ = semaphore.wait(timeout: .now() + 60)
+    if downloadSemaphore.wait(timeout: .now() + 60) != .success {
+      downloadTask.cancel()
+      throw MCPError.appleScriptError("PDF download timed out")
+    }
 
-    if let error = downloadError {
+    if let error = downloadError.value {
       throw MCPError.appleScriptError("Failed to download PDF: \(error.localizedDescription)")
     }
 
-    guard let data = pdfData, data.count > 1000 else {
+    guard let data = pdfData.value, data.count > 1000 else {
       throw MCPError.appleScriptError("Downloaded file is too small or empty - PDF may not be available")
     }
 
