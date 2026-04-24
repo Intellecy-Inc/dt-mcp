@@ -57,7 +57,7 @@ enum MCPError: Error, LocalizedError {
     case .imageBlocked(let uuid):
       return "Image '\(uuid)' is private and image access is blocked by configuration."
     case .notAnImage(let uuid):
-      return "Record '\(uuid)' is not an image."
+      return "Record '\(uuid)' is not an image. preview_images only accepts DEVONthink records of type 'picture'. For PDFs, use get_record_content to read the indexed text."
     case .imageProcessingFailed(let reason):
       return "Failed to process image: \(reason)"
     }

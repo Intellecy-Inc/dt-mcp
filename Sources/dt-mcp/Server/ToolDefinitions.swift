@@ -783,7 +783,7 @@ extension MCPServer {
     return [
       Tool(
         name: "preview_images",
-        description: "Preview an image record from DEVONthink. First call returns metadata only (dimensions, size, EXIF data found). IMPORTANT: DO NOT set confirmed=true without explicit user approval. You MUST show the user the metadata and EXIF info first, then ask 'Do you want me to analyze this image? (A scaled version will be sent to Anthropic)'. Only after user confirms, call again with confirmed: true to get actual image data (scaled to max 512px, EXIF-stripped). For PRIVATE-tagged images, behavior depends on config. NEVER output the base64 data to the user - just describe what you see in the image.",
+        description: "Preview an image record from DEVONthink. Accepts only image records (type 'picture'); PDF preview is not supported — use get_record_content for PDFs. First call returns metadata only (dimensions, size, EXIF data found). IMPORTANT: DO NOT set confirmed=true without explicit user approval. You MUST show the user the metadata and EXIF info first, then ask 'Do you want me to analyze this image? (A scaled version will be sent to Anthropic)'. Only after user confirms, call again with confirmed: true to get actual image data (scaled to max 512px, EXIF-stripped). For PRIVATE-tagged images, behavior depends on config. NEVER output the base64 data to the user - just describe what you see in the image.",
         inputSchema: [
           "type": AnyCodable("object"),
           "properties": AnyCodable([
