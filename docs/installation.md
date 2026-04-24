@@ -34,6 +34,8 @@ swift build -c release
 
 ## Configuration
 
+> **Note:** `command` must be an absolute path. Most MCP clients — Claude Code and Claude Desktop included — spawn the binary directly without shell expansion, so `~/.local/bin/dt-mcp` (and any other tilde-prefixed path) silently fails with `ENOENT`.
+
 ### Claude Code
 
 Add to your project's `.mcp.json` or global `~/.claude/mcp.json`:
