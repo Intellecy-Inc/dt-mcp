@@ -92,10 +92,13 @@ class ConfigManager {
   private let configFile: URL
   private(set) var config: MCPConfig
 
-  private init() {
+  // Designated init is `internal` so tests can inject a temp configDir.
+  // Production code uses `.shared`, which calls this with no args and lands
+  // on ~/.config/dt-mcp.
+  init(configDir: URL? = nil) {
     let home = FileManager.default.homeDirectoryForCurrentUser
-    configDir = home.appendingPathComponent(".config/dt-mcp")
-    configFile = configDir.appendingPathComponent("config.json")
+    self.configDir = configDir ?? home.appendingPathComponent(".config/dt-mcp")
+    configFile = self.configDir.appendingPathComponent("config.json")
     config = MCPConfig()
     load()
   }
