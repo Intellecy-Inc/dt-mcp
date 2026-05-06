@@ -145,7 +145,21 @@ extension DEVONthinkBridge {
       setStatements.append("set unread of theRecord to \(unread)")
     }
     if let content = properties["content"] as? String {
-      setStatements.append("set plain text of theRecord to \"\(escape(content))\"")
+      // Pick the right content property based on record type.
+      // markdown → markdown source, html/webarchive → source, rtf/rtfd → rich text,
+      // everything else falls back to plain text.
+      setStatements.append("""
+      set rType to (type of theRecord) as string
+      if rType is "markdown" then
+        set markdown source of theRecord to "\(escape(content))"
+      else if rType is "html" or rType is "webarchive" then
+        set source of theRecord to "\(escape(content))"
+      else if rType is "rtf" or rType is "rtfd" then
+        set rich text of theRecord to "\(escape(content))"
+      else
+        set plain text of theRecord to "\(escape(content))"
+      end if
+      """)
     }
     if let url = properties["url"] as? String {
       setStatements.append("set URL of theRecord to \"\(escape(url))\"")

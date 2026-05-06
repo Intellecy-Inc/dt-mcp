@@ -50,6 +50,7 @@
 | `create_bookmark` | Create a bookmark |
 | `download_url` | Download URL as web archive |
 | `download_markdown` | Download URL as Markdown |
+| `download_pdf_from_doi` | Download PDF from sci-hub using DOI (for paywalled papers) |
 
 ## Links & References
 
