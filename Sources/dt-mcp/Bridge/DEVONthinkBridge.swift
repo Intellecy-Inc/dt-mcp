@@ -36,7 +36,9 @@ class DEVONthinkBridge {
 
     let result = appleScript.executeAndReturnError(&error)
     if let error = error {
-      throw MCPError.appleScriptError(error.description)
+      let msg = error.description
+      FileHandle.standardError.write(Data("[dt-mcp] AppleScript error: \(msg)\n".utf8))
+      throw MCPError.appleScriptError(msg)
     }
     return result
   }
@@ -88,8 +90,13 @@ class DEVONthinkBridge {
   }
 
   func parseRecord(_ descriptor: NSAppleEventDescriptor) -> [String: Any] {
+    guard descriptor.numberOfItems >= 16 else {
+      FileHandle.standardError.write(Data("[dt-mcp] parseRecord: expected 16 fields, got \(descriptor.numberOfItems)\n".utf8))
+      return ["uuid": "", "name": "", "error": "Malformed record descriptor"]
+    }
+
     var tags: [String] = []
-    if let tagsDesc = descriptor.atIndex(5) {
+    if let tagsDesc = descriptor.atIndex(5), tagsDesc.numberOfItems > 0 {
       for i in 1...tagsDesc.numberOfItems {
         if let tag = tagsDesc.atIndex(i)?.stringValue {
           tags.append(tag)
@@ -119,6 +126,7 @@ class DEVONthinkBridge {
 
   func parseCustomMetadata(_ descriptor: NSAppleEventDescriptor) -> [String: Any] {
     var result: [String: Any] = [:]
+    guard descriptor.numberOfItems > 0 else { return result }
     for i in 1...descriptor.numberOfItems {
       guard let item = descriptor.atIndex(i),
             let key = item.atIndex(1)?.stringValue else { continue }
