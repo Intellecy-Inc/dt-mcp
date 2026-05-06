@@ -19,7 +19,7 @@ V0.6.2
 ## Quick Start
 
 1. Download the latest binary from [Releases](../../releases)
-2. Add to your MCP client config:
+2. Add to your MCP client config. The `command` must be an absolute path — most MCP clients (Claude Code and Claude Desktop included) spawn it directly without shell expansion, so `~` and `$HOME` don't expand:
    ```json
    {
      "mcpServers": {
