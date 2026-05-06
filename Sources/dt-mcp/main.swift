@@ -30,6 +30,10 @@ let server = MCPServer()
 
 Task {
   await server.run()
+  // server.run() returns when stdin closes; exit so the host's stdio pipe also
+  // closes. Without this the RunLoop keeps the process alive forever, hanging
+  // any MCP client or test harness that waits on pipe closure.
+  exit(0)
 }
 
 RunLoop.main.run()

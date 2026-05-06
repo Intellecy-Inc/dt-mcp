@@ -62,8 +62,15 @@ class DEVONthinkBridge {
   // MARK: - Helpers
 
   func escape(_ str: String) -> String {
+    // Order matters: backslash first so we don't double-escape the escapes we
+    // introduce below. Newlines/returns/tabs must be encoded as their AppleScript
+    // escape sequences; leaving them raw ends the current string literal and
+    // allows arbitrary script to be appended (injection via tool argument).
     return str.replacingOccurrences(of: "\\", with: "\\\\")
               .replacingOccurrences(of: "\"", with: "\\\"")
+              .replacingOccurrences(of: "\n", with: "\\n")
+              .replacingOccurrences(of: "\r", with: "\\r")
+              .replacingOccurrences(of: "\t", with: "\\t")
   }
 
   func parseRecordList(_ descriptor: NSAppleEventDescriptor, keys: [String]) -> [[String: Any]] {

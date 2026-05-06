@@ -1,4 +1,0 @@
-module DEVONthinkBridge {
-  header "DEVONthink.h"
-  export *
-}
